@@ -45,4 +45,5 @@ group :test do
   gem 'rspec'
   # Pretty printed test output
   gem 'turn', :require => false
+  gem 'factory_girl_rails'
 end
