@@ -21,9 +21,10 @@ RSpec.describe "UserPages" do
 
       it { should have_selector('div.pagination') }
 
-    it "should list each user" do
-      User.all.each do |user|
-        expect(page).to have_selector('li', text: user.name)
+      it "should list each user" do
+        User.paginate(page: 1).each do |user|
+          expect(page).to have_selector('li', text: user.name)
+        end
       end
     end
 
@@ -55,6 +56,13 @@ RSpec.describe "UserPages" do
 
     it { should have_content(user.name) }
     it { should have_title(user.name) }
+  end
+
+  describe "signup page" do
+    before { visit signup_path }
+
+    it { should have_content('Sign up') }
+    it { should have_title(full_title('Sign up')) }
   end
 
   describe "signup" do
@@ -89,17 +97,15 @@ RSpec.describe "UserPages" do
         it { should have_title(user.name) }
         it { should have_selector('div.alert.alert-success', text: 'Welcome') }
       end
-
-      describe "followed by signout" do
-        before { click_link "Sign out" }
-        it { should have_link('Sign in') }
-      end
     end
   end
 
   describe "edit" do
     let(:user) { FactoryGirl.create(:user) }
-    before { visit edit_user_path(user) }
+    before do
+      sign_in user
+      visit edit_user_path(user)
+    end
 
     describe "page" do
       it { should have_content("Update your profile") }
@@ -131,5 +137,4 @@ RSpec.describe "UserPages" do
       specify { expect(user.reload.email).to eq new_email }
     end
   end
-end
 end
